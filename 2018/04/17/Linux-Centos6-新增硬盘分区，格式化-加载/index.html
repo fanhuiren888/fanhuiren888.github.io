@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+
+    
+
+    
+
+
+
+    <meta charset="utf-8">
+    
+    
+    
+    
+    <title>Linux_Centos6_新增硬盘分区，格式化,加载 | Fanhr</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <meta name="theme-color" content="#3F51B5">
+    
+    
+    <meta name="keywords" content="Linux">
+    <meta name="description" content="此次操作是在VM虚拟机环境中进行：  首先需要添加一块硬盘–&amp;gt;点击编辑虚拟机设置–&amp;gt;点击弹框下面的添加–&amp;gt;选择硬盘–&amp;gt;点击下一步 选择SCSI类型–&amp;gt;点击下一步 默认–&amp;gt;下一步 选择下面的多文件–&amp;gt;下一步 点击完成–&amp;gt;确定–&amp;gt;左边的虚拟机就会多一块20G的硬盘  然后虚拟机开机，在进行分区操作之前先简单介绍下磁盘分区工具fdisk，有几个常用的">
+<meta name="keywords" content="Linux">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux_Centos6_新增硬盘分区，格式化,加载">
+<meta property="og:url" content="https://fanhuiren888.github.io/2018/04/17/Linux-Centos6-新增硬盘分区，格式化-加载/index.html">
+<meta property="og:site_name" content="Fanhr">
+<meta property="og:description" content="此次操作是在VM虚拟机环境中进行：  首先需要添加一块硬盘–&amp;gt;点击编辑虚拟机设置–&amp;gt;点击弹框下面的添加–&amp;gt;选择硬盘–&amp;gt;点击下一步 选择SCSI类型–&amp;gt;点击下一步 默认–&amp;gt;下一步 选择下面的多文件–&amp;gt;下一步 点击完成–&amp;gt;确定–&amp;gt;左边的虚拟机就会多一块20G的硬盘  然后虚拟机开机，在进行分区操作之前先简单介绍下磁盘分区工具fdisk，有几个常用的">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://img.blog.csdn.net/20180208144347471?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZmFuaHVpcmVuODg4/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70">
+<meta property="og:image" content="http://img.blog.csdn.net/20180208144033420?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZmFuaHVpcmVuODg4/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70">
+<meta property="og:image" content="http://img.blog.csdn.net/20180208144410834?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZmFuaHVpcmVuODg4/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70">
+<meta property="og:image" content="http://img.blog.csdn.net/20180208144446655?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZmFuaHVpcmVuODg4/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70">
+<meta property="og:image" content="http://img.blog.csdn.net/20180208144613230?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZmFuaHVpcmVuODg4/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70">
+<meta property="og:updated_time" content="2018-04-17T03:22:20.786Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Linux_Centos6_新增硬盘分区，格式化,加载">
+<meta name="twitter:description" content="此次操作是在VM虚拟机环境中进行：  首先需要添加一块硬盘–&amp;gt;点击编辑虚拟机设置–&amp;gt;点击弹框下面的添加–&amp;gt;选择硬盘–&amp;gt;点击下一步 选择SCSI类型–&amp;gt;点击下一步 默认–&amp;gt;下一步 选择下面的多文件–&amp;gt;下一步 点击完成–&amp;gt;确定–&amp;gt;左边的虚拟机就会多一块20G的硬盘  然后虚拟机开机，在进行分区操作之前先简单介绍下磁盘分区工具fdisk，有几个常用的">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20180208144347471?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZmFuaHVpcmVuODg4/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70">
+    
+        <link rel="alternate" type="application/atom+xml" title="Fanhr" href="/atom.xml">
+    
+    <link rel="shortcut icon" href="/favicon.ico">
+    <link rel="stylesheet" href="//unpkg.com/hexo-theme-material-indigo@latest/css/style.css">
+    <script>window.lazyScripts=[]</script>
+
+    <!-- custom head -->
+    
+
+</head>
+
+<body>
+    <div id="loading" class="active"></div>
+
+    <aside id="menu" class="hide" >
+  <div class="inner flex-row-vertical">
+    <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menu-off">
+        <i class="icon icon-lg icon-close"></i>
+    </a>
+    <div class="brand-wrap" style="background-image:url(/img/brand.jpg)">
+      <div class="brand">
+        <a href="/" class="avatar waves-effect waves-circle waves-light">
+          <img src="/img/工作照.jpg">
+        </a>
+        <hgroup class="introduce">
+          <h5 class="nickname">Fanhr</h5>
+          <a href="mailto:fanhuiren888@qq.com" title="fanhuiren888@qq.com" class="mail">fanhuiren888@qq.com</a>
+        </hgroup>
+      </div>
+    </div>
+    <div class="scroll-wrap flex-col">
+      <ul class="nav">
+        
+            <li class="waves-block waves-effect">
+              <a href="/"  >
+                <i class="icon icon-lg icon-home"></i>
+                Home
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/archives"  >
+                <i class="icon icon-lg icon-archives"></i>
+                Archives
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="/tags"  >
+                <i class="icon icon-lg icon-tags"></i>
+                Tags
+              </a>
+            </li>
+        
+            <li class="waves-block waves-effect">
+              <a href="https://github.com/fanhuiren888" target="_blank" >
+                <i class="icon icon-lg icon-github"></i>
+                Github
+              </a>
+            </li>
+        
+      </ul>
+    </div>
+  </div>
+</aside>
+
+    <main id="main">
+        <header class="top-header" id="header">
+    <div class="flex-row">
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light on" id="menu-toggle">
+          <i class="icon icon-lg icon-navicon"></i>
+        </a>
+        <div class="flex-col header-title ellipsis">Linux_Centos6_新增硬盘分区，格式化,加载</div>
+        
+        <div class="search-wrap" id="search-wrap">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="back">
+                <i class="icon icon-lg icon-chevron-left"></i>
+            </a>
+            <input type="text" id="key" class="search-input" autocomplete="off" placeholder="输入感兴趣的关键字">
+            <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="search">
+                <i class="icon icon-lg icon-search"></i>
+            </a>
+        </div>
+        
+        
+        <a href="javascript:;" class="header-icon waves-effect waves-circle waves-light" id="menuShare">
+            <i class="icon icon-lg icon-share-alt"></i>
+        </a>
+        
+    </div>
+</header>
+<header class="content-header post-header">
+
+    <div class="container fade-scale">
+        <h1 class="title">Linux_Centos6_新增硬盘分区，格式化,加载</h1>
+        <h5 class="subtitle">
+            
+                <time datetime="2018-04-17T03:13:51.000Z" itemprop="datePublished" class="page-time">
+  2018-04-17
+</time>
+
+
+            
+        </h5>
+    </div>
+
+    
+
+
+</header>
+
+
+<div class="container body-wrap">
+    
+
+<article id="post-Linux-Centos6-新增硬盘分区，格式化-加载"
+  class="post-article article-type-post fade" itemprop="blogPost">
+
+    <div class="post-card">
+        <h1 class="post-card-title">Linux_Centos6_新增硬盘分区，格式化,加载</h1>
+        <div class="post-meta">
+            <time class="post-time" title="2018-04-17 11:13:51" datetime="2018-04-17T03:13:51.000Z"  itemprop="datePublished">2018-04-17</time>
+
+            
+
+
+            
+<span id="busuanzi_container_page_pv" title="文章总阅读量" style='display:none'>
+    <i class="icon icon-eye icon-pr"></i><span id="busuanzi_value_page_pv"></span>
+</span>
+
+
+        </div>
+        <div class="post-content" id="post-content" itemprop="postContent">
+            <p><strong>此次操作是在VM虚拟机环境中进行：</strong></p>
+<ul>
+<li><strong>首先需要添加一块硬盘–&gt;点击编辑虚拟机设置–&gt;点击弹框下面的添加–&gt;选择硬盘–&gt;点击下一步</strong><br><img src="http://img.blog.csdn.net/20180208144347471?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZmFuaHVpcmVuODg4/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="这里写图片描述"></li>
+<li><strong>选择SCSI类型–&gt;点击下一步</strong><br><img src="http://img.blog.csdn.net/20180208144033420?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZmFuaHVpcmVuODg4/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="这里写图片描述"></li>
+<li><strong>默认–&gt;下一步</strong><br><img src="http://img.blog.csdn.net/20180208144410834?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZmFuaHVpcmVuODg4/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="这里写图片描述"></li>
+<li><strong>选择下面的多文件–&gt;下一步</strong><br><img src="http://img.blog.csdn.net/20180208144446655?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZmFuaHVpcmVuODg4/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="这里写图片描述"></li>
+<li><strong>点击完成–&gt;确定–&gt;左边的虚拟机就会多一块20G的硬盘</strong><br><img src="http://img.blog.csdn.net/20180208144613230?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvZmFuaHVpcmVuODg4/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="这里写图片描述"><br>  <strong>然后虚拟机开机，在进行分区操作之前先简单介绍下磁盘分区工具fdisk，有几个常用的命令，例：</strong></li>
+</ul>
+<p>fdisk + 新增磁盘：对指定的硬盘进行分区操作</p>
+<p>fdisk -l :显示指定硬盘分区表信息</p>
+<p>fdisk -d:删除一个硬盘分区</p>
+<p>fdisk -n:创建一个分区</p>
+<p>fdisk -p：列出硬盘分区表</p>
+<p>fdisk -q：退出fdisk，不保存更改</p>
+<p>fdisk -w:把设置写入硬盘分区表，然后退出。</p>
+<p><strong>介绍完命令我们开始操作，首先查看一下我们现在的分区情况</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">[root@root ~]# df -h</span><br><span class="line">Filesystem      Size  Used Avail Use% Mounted on</span><br><span class="line">/dev/sda6        17G  3.2G   13G  20% /</span><br><span class="line">tmpfs           503M   72K  503M   1% /dev/shm</span><br><span class="line">/dev/sda1       504M   39M  440M   9% /boot</span><br><span class="line">/dev/sda2       5.8G  140M  5.4G   3% /home</span><br><span class="line">/dev/sda3       4.9G  222M  4.4G   5% /var</span><br><span class="line">[root@root ~]# fdisk -l</span><br><span class="line"></span><br><span class="line">Disk /dev/sda: 32.2 GB, 32212254720 bytes			#第一块硬盘30G</span><br><span class="line">255 heads, 63 sectors/track, 3916 cylinders</span><br><span class="line">Units = cylinders of 16065 * 512 = 8225280 bytes</span><br><span class="line">Sector size (logical/physical): 512 bytes / 512 bytes</span><br><span class="line">I/O size (minimum/optimal): 512 bytes / 512 bytes</span><br><span class="line">Disk identifier: 0x0007c967</span><br><span class="line">													#具体的分区情况</span><br><span class="line">   Device Boot      Start         End      Blocks   Id  System</span><br><span class="line">/dev/sda1   *           1          66      524288   83  Linux</span><br><span class="line">Partition 1 does not end on cylinder boundary.</span><br><span class="line">/dev/sda2              66         831     6144000   83  Linux</span><br><span class="line">Partition 2 does not end on cylinder boundary.</span><br><span class="line">/dev/sda3             831        1468     5120000   83  Linux</span><br><span class="line">/dev/sda4            1468        3917    19667968    5  Extended</span><br><span class="line">/dev/sda5            1468        1723     2048000   82  Linux swap / Solaris</span><br><span class="line">/dev/sda6            1723        3917    17617920   83  Linux</span><br><span class="line"></span><br><span class="line">Disk /dev/sdb: 21.5 GB, 21474836480 bytes			#这是新增的20G硬盘</span><br><span class="line">255 heads, 63 sectors/track, 2610 cylinders</span><br><span class="line">Units = cylinders of 16065 * 512 = 8225280 bytes</span><br><span class="line">Sector size (logical/physical): 512 bytes / 512 bytes</span><br><span class="line">I/O size (minimum/optimal): 512 bytes / 512 bytes</span><br><span class="line">Disk identifier: 0x00000000</span><br></pre></td></tr></table></figure>
+<p><strong>现在进行分区，我这次练习分为1个主分区，4个逻辑分区，主分区大小为8G，逻辑分区大小分别为2G、3G、3G、2G</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br></pre></td><td class="code"><pre><span class="line">[root@root ~]# fdisk /dev/sdb						#执行分区命令</span><br><span class="line">Device contains neither a valid DOS partition table, nor Sun, SGI or OSF disklabel</span><br><span class="line">Building a new DOS disklabel with disk identifier 0x543c4b70.</span><br><span class="line">Changes will remain in memory only, until you decide to write them.</span><br><span class="line">After that, of course, the previous content won&apos;t be recoverable.</span><br><span class="line"></span><br><span class="line">Warning: invalid flag 0x0000 of partition table 4 will be corrected by w(rite)</span><br><span class="line"></span><br><span class="line">WARNING: DOS-compatible mode is deprecated. It&apos;s strongly recommended to</span><br><span class="line">         switch off the mode (command &apos;c&apos;) and change display units to</span><br><span class="line">         sectors (command &apos;u&apos;).</span><br><span class="line"></span><br><span class="line">Command (m for help): n								#N 新建分区</span><br><span class="line">Command action</span><br><span class="line">   e   extended</span><br><span class="line">   p   primary partition (1-4)</span><br><span class="line">p													#P 主分区   E 扩展分区</span><br><span class="line">Partition number (1-4): 1							#分区号   输入1</span><br><span class="line">First cylinder (1-2610, default 1): 				#默认</span><br><span class="line">Using default value 1</span><br><span class="line">Last cylinder, +cylinders or +size&#123;K,M,G&#125; (1-2610, default 2610): +8G		#sdb1 分8G</span><br><span class="line"></span><br><span class="line">Command (m for help): w  							# W  保存</span><br><span class="line">The partition table has been altered!</span><br><span class="line"></span><br><span class="line">Calling ioctl() to re-read partition table.</span><br><span class="line">Syncing disks.</span><br><span class="line">[root@root ~]# fdisk -l	 # 我这里分完主分区先看看，毕竟操作不熟想保险一点，你们也可以做完主分区继续往下操作</span><br><span class="line">Disk /dev/sda: 32.2 GB, 32212254720 bytes</span><br><span class="line">255 heads, 63 sectors/track, 3916 cylinders</span><br><span class="line">Units = cylinders of 16065 * 512 = 8225280 bytes</span><br><span class="line">Sector size (logical/physical): 512 bytes / 512 bytes</span><br><span class="line">I/O size (minimum/optimal): 512 bytes / 512 bytes</span><br><span class="line">Disk identifier: 0x0007c967</span><br><span class="line"></span><br><span class="line">   Device Boot      Start         End      Blocks   Id  System</span><br><span class="line">/dev/sda1   *           1          66      524288   83  Linux</span><br><span class="line">Partition 1 does not end on cylinder boundary.</span><br><span class="line">/dev/sda2              66         831     6144000   83  Linux</span><br><span class="line">Partition 2 does not end on cylinder boundary.</span><br><span class="line">/dev/sda3             831        1468     5120000   83  Linux</span><br><span class="line">/dev/sda4            1468        3917    19667968    5  Extended</span><br><span class="line">/dev/sda5            1468        1723     2048000   82  Linux swap / Solaris</span><br><span class="line">/dev/sda6            1723        3917    17617920   83  Linux</span><br><span class="line"></span><br><span class="line">Disk /dev/sdb: 21.5 GB, 21474836480 bytes</span><br><span class="line">255 heads, 63 sectors/track, 2610 cylinders</span><br><span class="line">Units = cylinders of 16065 * 512 = 8225280 bytes</span><br><span class="line">Sector size (logical/physical): 512 bytes / 512 bytes</span><br><span class="line">I/O size (minimum/optimal): 512 bytes / 512 bytes</span><br><span class="line">Disk identifier: 0x543c4b70</span><br><span class="line"></span><br><span class="line">   Device Boot      Start         End      Blocks   Id  System</span><br><span class="line">/dev/sdb1               1        1045     8393931   83  Linux</span><br><span class="line">[root@root ~]# fdisk /dev/sdb			#继续操作，下面进行扩展分区</span><br><span class="line"></span><br><span class="line">WARNING: DOS-compatible mode is deprecated. It&apos;s strongly recommended to</span><br><span class="line">         switch off the mode (command &apos;c&apos;) and change display units to</span><br><span class="line">         sectors (command &apos;u&apos;).</span><br><span class="line"></span><br><span class="line">Command (m for help): n					#新建</span><br><span class="line">Command action</span><br><span class="line">   e   extended</span><br><span class="line">   p   primary partition (1-4)</span><br><span class="line">e										#扩展分区</span><br><span class="line">Partition number (1-4): 2				#分区号   2  </span><br><span class="line">First cylinder (1046-2610, default 1046): </span><br><span class="line">Using default value 1046</span><br><span class="line">Last cylinder, +cylinders or +size&#123;K,M,G&#125; (1046-2610, default 2610): 	#这里扩展分区的容量什么都不写，默认所有</span><br><span class="line">Using default value 2610</span><br><span class="line"></span><br><span class="line">Command (m for help): n					#新建</span><br><span class="line">Command action</span><br><span class="line">   l   logical (5 or over)</span><br><span class="line">   p   primary partition (1-4)</span><br><span class="line">l										#L	逻辑分区</span><br><span class="line">First cylinder (1046-2610, default 1046):          </span><br><span class="line">Using default value 1046</span><br><span class="line">Last cylinder, +cylinders or +size&#123;K,M,G&#125; (1046-2610, default 2610): +2G	#2G</span><br><span class="line"></span><br><span class="line">Command (m for help): n					#新建</span><br><span class="line">Command action</span><br><span class="line">   l   logical (5 or over)</span><br><span class="line">   p   primary partition (1-4)</span><br><span class="line">l										#L	逻辑分区</span><br><span class="line">First cylinder (1308-2610, default 1308): </span><br><span class="line">Using default value 1308</span><br><span class="line">Last cylinder, +cylinders or +size&#123;K,M,G&#125; (1308-2610, default 2610): +3G	#3G</span><br><span class="line"></span><br><span class="line">Command (m for help): n					#新建</span><br><span class="line">Command action</span><br><span class="line">   l   logical (5 or over)</span><br><span class="line">   p   primary partition (1-4)</span><br><span class="line">l										#L	逻辑分区</span><br><span class="line">First cylinder (1701-2610, default 1701): </span><br><span class="line">Using default value 1701</span><br><span class="line">Last cylinder, +cylinders or +size&#123;K,M,G&#125; (1701-2610, default 2610): +3G		#3G</span><br><span class="line"></span><br><span class="line">Command (m for help): n					#新建</span><br><span class="line">Command action</span><br><span class="line">   l   logical (5 or over)</span><br><span class="line">   p   primary partition (1-4)</span><br><span class="line">l										#L	逻辑分区</span><br><span class="line">First cylinder (2094-2610, default 2094): </span><br><span class="line">Using default value 2094</span><br><span class="line">Last cylinder, +cylinders or +size&#123;K,M,G&#125; (2094-2610, default 2610): +2G		#2G	</span><br><span class="line"></span><br><span class="line">Command (m for help): w					#W	保存</span><br><span class="line">The partition table has been altered!</span><br><span class="line"></span><br><span class="line">Calling ioctl() to re-read partition table.</span><br><span class="line">Syncing disks.</span><br></pre></td></tr></table></figure>
+<p><strong>到这里所有分区就完了，再看一眼分区</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">[root@root ~]# fdisk -l</span><br><span class="line"></span><br><span class="line">Disk /dev/sda: 32.2 GB, 32212254720 bytes</span><br><span class="line">255 heads, 63 sectors/track, 3916 cylinders</span><br><span class="line">Units = cylinders of 16065 * 512 = 8225280 bytes</span><br><span class="line">Sector size (logical/physical): 512 bytes / 512 bytes</span><br><span class="line">I/O size (minimum/optimal): 512 bytes / 512 bytes</span><br><span class="line">Disk identifier: 0x0007c967</span><br><span class="line"></span><br><span class="line">   Device Boot      Start         End      Blocks   Id  System</span><br><span class="line">/dev/sda1   *           1          66      524288   83  Linux</span><br><span class="line">Partition 1 does not end on cylinder boundary.</span><br><span class="line">/dev/sda2              66         831     6144000   83  Linux</span><br><span class="line">Partition 2 does not end on cylinder boundary.</span><br><span class="line">/dev/sda3             831        1468     5120000   83  Linux</span><br><span class="line">/dev/sda4            1468        3917    19667968    5  Extended</span><br><span class="line">/dev/sda5            1468        1723     2048000   82  Linux swap / Solaris</span><br><span class="line">/dev/sda6            1723        3917    17617920   83  Linux</span><br><span class="line"></span><br><span class="line">Disk /dev/sdb: 21.5 GB, 21474836480 bytes</span><br><span class="line">255 heads, 63 sectors/track, 2610 cylinders</span><br><span class="line">Units = cylinders of 16065 * 512 = 8225280 bytes</span><br><span class="line">Sector size (logical/physical): 512 bytes / 512 bytes</span><br><span class="line">I/O size (minimum/optimal): 512 bytes / 512 bytes</span><br><span class="line">Disk identifier: 0x543c4b70</span><br><span class="line"></span><br><span class="line">   Device Boot      Start         End      Blocks   Id  System</span><br><span class="line">/dev/sdb1               1        1045     8393931   83  Linux</span><br><span class="line">/dev/sdb2            1046        2610    12570862+   5  Extended</span><br><span class="line">/dev/sdb5            1046        1307     2104483+  83  Linux</span><br><span class="line">/dev/sdb6            1308        1700     3156741   83  Linux</span><br><span class="line">/dev/sdb7            1701        2093     3156741   83  Linux</span><br><span class="line">/dev/sdb8            2094        2355     2104483+  83  Linux</span><br></pre></td></tr></table></figure>
+<p><strong>下面进行格式化操作</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br></pre></td><td class="code"><pre><span class="line">[root@root ~]# mkfs.ext4 /dev/sdb1									#以EXT4分区格式 格式化sdb1  </span><br><span class="line">mke2fs 1.41.12 (17-May-2010)</span><br><span class="line">文件系统标签=</span><br><span class="line">操作系统:Linux</span><br><span class="line">块大小=4096 (log=2)</span><br><span class="line">分块大小=4096 (log=2)</span><br><span class="line">Stride=0 blocks, Stripe width=0 blocks</span><br><span class="line">525200 inodes, 2098482 blocks</span><br><span class="line">104924 blocks (5.00%) reserved for the super user</span><br><span class="line">第一个数据块=0</span><br><span class="line">Maximum filesystem blocks=2151677952</span><br><span class="line">65 block groups</span><br><span class="line">32768 blocks per group, 32768 fragments per group</span><br><span class="line">8080 inodes per group</span><br><span class="line">Superblock backups stored on blocks: </span><br><span class="line">        32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632</span><br><span class="line"></span><br><span class="line">正在写入inode表: 完成                            </span><br><span class="line">Creating journal (32768 blocks): 完成</span><br><span class="line">Writing superblocks and filesystem accounting information: 完成</span><br><span class="line"></span><br><span class="line">This filesystem will be automatically checked every 37 mounts or</span><br><span class="line">180 days, whichever comes first.  Use tune2fs -c or -i to override.</span><br><span class="line">[root@root ~]# mkfs.ext4 /dev/sdb2</span><br><span class="line">mke2fs 1.41.12 (17-May-2010)</span><br><span class="line">mkfs.ext4: inode_size (128) * inodes_count (0) too big for a</span><br><span class="line">        filesystem with 0 blocks, specify higher inode_ratio (-i)</span><br><span class="line">        or lower inode count (-N).</span><br><span class="line"></span><br><span class="line">[root@root ~]# mkfs.ext4 /dev/sdb5									#以EXT4分区格式 格式化sdb5</span><br><span class="line">mke2fs 1.41.12 (17-May-2010)</span><br><span class="line">文件系统标签=</span><br><span class="line">操作系统:Linux</span><br><span class="line">块大小=4096 (log=2)</span><br><span class="line">分块大小=4096 (log=2)</span><br><span class="line">Stride=0 blocks, Stripe width=0 blocks</span><br><span class="line">131648 inodes, 526120 blocks</span><br><span class="line">26306 blocks (5.00%) reserved for the super user</span><br><span class="line">第一个数据块=0</span><br><span class="line">Maximum filesystem blocks=541065216</span><br><span class="line">17 block groups</span><br><span class="line">32768 blocks per group, 32768 fragments per group</span><br><span class="line">7744 inodes per group</span><br><span class="line">Superblock backups stored on blocks: </span><br><span class="line">        32768, 98304, 163840, 229376, 294912</span><br><span class="line"></span><br><span class="line">正在写入inode表: 完成                            </span><br><span class="line">Creating journal (16384 blocks): 完成</span><br><span class="line">Writing superblocks and filesystem accounting information: 完成</span><br><span class="line"></span><br><span class="line">This filesystem will be automatically checked every 39 mounts or</span><br><span class="line">180 days, whichever comes first.  Use tune2fs -c or -i to override.</span><br><span class="line"></span><br><span class="line">[root@root ~]# mkfs.ext4 /dev/sdb6									#以EXT4分区格式 格式化sdb6</span><br><span class="line">mke2fs 1.41.12 (17-May-2010)</span><br><span class="line">文件系统标签=</span><br><span class="line">操作系统:Linux</span><br><span class="line">块大小=4096 (log=2)</span><br><span class="line">分块大小=4096 (log=2)</span><br><span class="line">Stride=0 blocks, Stripe width=0 blocks</span><br><span class="line">197600 inodes, 789185 blocks</span><br><span class="line">39459 blocks (5.00%) reserved for the super user</span><br><span class="line">第一个数据块=0</span><br><span class="line">Maximum filesystem blocks=809500672</span><br><span class="line">25 block groups</span><br><span class="line">32768 blocks per group, 32768 fragments per group</span><br><span class="line">7904 inodes per group</span><br><span class="line">Superblock backups stored on blocks: </span><br><span class="line">        32768, 98304, 163840, 229376, 294912</span><br><span class="line"></span><br><span class="line">正在写入inode表: 完成                            </span><br><span class="line">Creating journal (16384 blocks): 完成</span><br><span class="line">Writing superblocks and filesystem accounting information: 完成</span><br><span class="line"></span><br><span class="line">This filesystem will be automatically checked every 23 mounts or</span><br><span class="line">180 days, whichever comes first.  Use tune2fs -c or -i to override.</span><br><span class="line"></span><br><span class="line">[root@root ~]# mkfs.ext4 /dev/sdb7							#以EXT4分区格式 格式化sdb7</span><br><span class="line">mke2fs 1.41.12 (17-May-2010)</span><br><span class="line">文件系统标签=</span><br><span class="line">操作系统:Linux</span><br><span class="line">块大小=4096 (log=2)</span><br><span class="line">分块大小=4096 (log=2)</span><br><span class="line">Stride=0 blocks, Stripe width=0 blocks</span><br><span class="line">197600 inodes, 789185 blocks</span><br><span class="line">39459 blocks (5.00%) reserved for the super user</span><br><span class="line">第一个数据块=0</span><br><span class="line">Maximum filesystem blocks=809500672</span><br><span class="line">25 block groups</span><br><span class="line">32768 blocks per group, 32768 fragments per group</span><br><span class="line">7904 inodes per group</span><br><span class="line">Superblock backups stored on blocks: </span><br><span class="line">        32768, 98304, 163840, 229376, 294912</span><br><span class="line"></span><br><span class="line">正在写入inode表: 完成                            </span><br><span class="line">Creating journal (16384 blocks): 完成</span><br><span class="line">Writing superblocks and filesystem accounting information: 完成</span><br><span class="line"></span><br><span class="line">This filesystem will be automatically checked every 34 mounts or</span><br><span class="line">180 days, whichever comes first.  Use tune2fs -c or -i to override.</span><br><span class="line"></span><br><span class="line">[root@root ~]# mkfs.ext4 /dev/sdb8							#以EXT4分区格式 格式化sdb8</span><br><span class="line">mke2fs 1.41.12 (17-May-2010)</span><br><span class="line">文件系统标签=</span><br><span class="line">操作系统:Linux</span><br><span class="line">块大小=4096 (log=2)</span><br><span class="line">分块大小=4096 (log=2)</span><br><span class="line">Stride=0 blocks, Stripe width=0 blocks</span><br><span class="line">131648 inodes, 526120 blocks</span><br><span class="line">26306 blocks (5.00%) reserved for the super user</span><br><span class="line">第一个数据块=0</span><br><span class="line">Maximum filesystem blocks=541065216</span><br><span class="line">17 block groups</span><br><span class="line">32768 blocks per group, 32768 fragments per group</span><br><span class="line">7744 inodes per group</span><br><span class="line">Superblock backups stored on blocks: </span><br><span class="line">        32768, 98304, 163840, 229376, 294912</span><br><span class="line"></span><br><span class="line">正在写入inode表: 完成                            </span><br><span class="line">Creating journal (16384 blocks): 完成</span><br><span class="line">Writing superblocks and filesystem accounting information: 完成</span><br><span class="line"></span><br><span class="line">This filesystem will be automatically checked every 38 mounts or</span><br><span class="line">180 days, whichever comes first.  Use tune2fs -c or -i to override.</span><br></pre></td></tr></table></figure>
+<p><strong>下面进行挂载操作，先创建挂载点，再挂载</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@root ~]# mkdir /tmp/sdb&#123;1,5,6,7,8&#125;		#创建5个区的挂载点；分别挂载</span><br><span class="line">[root@root ~]# mount /dev/sdb1 /tmp/sdb1		</span><br><span class="line">[root@root ~]# mount /dev/sdb5 /tmp/sdb5</span><br><span class="line">[root@root ~]# mount /dev/sdb6 /tmp/sdb6</span><br><span class="line">[root@root ~]# mount /dev/sdb7 /tmp/sdb7</span><br><span class="line">[root@root ~]# mount /dev/sdb8 /tmp/sdb8</span><br></pre></td></tr></table></figure>
+<p><strong>再次查看分区</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">[root@root ~]# fdisk -l</span><br><span class="line"></span><br><span class="line">Disk /dev/sda: 32.2 GB, 32212254720 bytes</span><br><span class="line">255 heads, 63 sectors/track, 3916 cylinders</span><br><span class="line">Units = cylinders of 16065 * 512 = 8225280 bytes</span><br><span class="line">Sector size (logical/physical): 512 bytes / 512 bytes</span><br><span class="line">I/O size (minimum/optimal): 512 bytes / 512 bytes</span><br><span class="line">Disk identifier: 0x0007c967</span><br><span class="line"></span><br><span class="line">   Device Boot      Start         End      Blocks   Id  System</span><br><span class="line">/dev/sda1   *           1          66      524288   83  Linux</span><br><span class="line">Partition 1 does not end on cylinder boundary.</span><br><span class="line">/dev/sda2              66         831     6144000   83  Linux</span><br><span class="line">Partition 2 does not end on cylinder boundary.</span><br><span class="line">/dev/sda3             831        1468     5120000   83  Linux</span><br><span class="line">/dev/sda4            1468        3917    19667968    5  Extended</span><br><span class="line">/dev/sda5            1468        1723     2048000   82  Linux swap / Solaris</span><br><span class="line">/dev/sda6            1723        3917    17617920   83  Linux</span><br><span class="line"></span><br><span class="line">Disk /dev/sdb: 21.5 GB, 21474836480 bytes</span><br><span class="line">255 heads, 63 sectors/track, 2610 cylinders</span><br><span class="line">Units = cylinders of 16065 * 512 = 8225280 bytes</span><br><span class="line">Sector size (logical/physical): 512 bytes / 512 bytes</span><br><span class="line">I/O size (minimum/optimal): 512 bytes / 512 bytes</span><br><span class="line">Disk identifier: 0x543c4b70</span><br><span class="line"></span><br><span class="line">   Device Boot      Start         End      Blocks   Id  System</span><br><span class="line">/dev/sdb1               1        1045     8393931   83  Linux</span><br><span class="line">/dev/sdb2            1046        2610    12570862+   5  Extended</span><br><span class="line">/dev/sdb5            1046        1307     2104483+  83  Linux</span><br><span class="line">/dev/sdb6            1308        1700     3156741   83  Linux</span><br><span class="line">/dev/sdb7            1701        2093     3156741   83  Linux</span><br><span class="line">/dev/sdb8            2094        2355     2104483+  83  Linux</span><br><span class="line">[root@root ~]# df -h</span><br><span class="line">Filesystem      Size  Used Avail Use% Mounted on</span><br><span class="line">/dev/sda6        17G  3.2G   13G  20% /</span><br><span class="line">tmpfs           503M   72K  503M   1% /dev/shm</span><br><span class="line">/dev/sda1       504M   39M  440M   9% /boot</span><br><span class="line">/dev/sda2       5.8G  140M  5.4G   3% /home</span><br><span class="line">/dev/sda3       4.9G  222M  4.4G   5% /var</span><br><span class="line">/dev/sdb1       7.9G  147M  7.4G   2% /tmp/sdb1</span><br><span class="line">/dev/sdb5       2.0G   68M  1.9G   4% /tmp/sdb5</span><br><span class="line">/dev/sdb6       3.0G   69M  2.8G   3% /tmp/sdb6</span><br><span class="line">/dev/sdb7       3.0G   69M  2.8G   3% /tmp/sdb7</span><br><span class="line">/dev/sdb8       2.0G   68M  1.9G   4% /tmp/sdb8</span><br></pre></td></tr></table></figure>
+<hr>
+
+        </div>
+
+        <blockquote class="post-copyright">
+    
+    <div class="content">
+        
+<span class="post-time">
+    最后更新时间：<time datetime="2018-04-17T03:22:20.786Z" itemprop="dateUpdated">2018-04-17 11:22:20</time>
+</span><br>
+
+
+        
+    </div>
+    
+    <footer>
+        <a href="https://fanhuiren888.github.io">
+            <img src="/img/工作照.jpg" alt="Fanhr">
+            Fanhr
+        </a>
+    </footer>
+</blockquote>
+
+        
+
+
+        <div class="post-footer">
+            
+	<ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li></ul>
+
+
+            
+<div class="page-share-wrap">
+    
+
+<div class="page-share" id="pageShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://fanhuiren888.github.io/2018/04/17/Linux-Centos6-新增硬盘分区，格式化-加载/&title=《Linux_Centos6_新增硬盘分区，格式化,加载》 — Fanhr&pic=https://fanhuiren888.github.io/img/工作照.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://fanhuiren888.github.io/2018/04/17/Linux-Centos6-新增硬盘分区，格式化-加载/&title=《Linux_Centos6_新增硬盘分区，格式化,加载》 — Fanhr&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://fanhuiren888.github.io/2018/04/17/Linux-Centos6-新增硬盘分区，格式化-加载/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《Linux_Centos6_新增硬盘分区，格式化,加载》 — Fanhr&url=https://fanhuiren888.github.io/2018/04/17/Linux-Centos6-新增硬盘分区，格式化-加载/&via=https://fanhuiren888.github.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://fanhuiren888.github.io/2018/04/17/Linux-Centos6-新增硬盘分区，格式化-加载/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+
+    <a href="javascript:;" id="shareFab" class="page-share-fab waves-effect waves-circle">
+        <i class="icon icon-share-alt icon-lg"></i>
+    </a>
+</div>
+
+
+
+        </div>
+    </div>
+
+    
+<nav class="post-nav flex-row flex-justify-between flex-row-reverse">
+  
+
+  
+    <div class="waves-block waves-effect next">
+      <a href="/2018/02/27/Git-Hexo-博客搭建/" id="post-next" class="post-nav-link">
+        <div class="tips">Next <i class="icon icon-angle-right icon-lg icon-pl"></i></div>
+        <h4 class="title">Git + Hexo 博客搭建</h4>
+      </a>
+    </div>
+  
+</nav>
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</article>
+
+
+
+</div>
+
+        <footer class="footer">
+    <div class="top">
+        
+<p>
+    <span id="busuanzi_container_site_uv" style='display:none'>
+        站点总访客数：<span id="busuanzi_value_site_uv"></span>
+    </span>
+    <span id="busuanzi_container_site_pv" style='display:none'>
+        站点总访问量：<span id="busuanzi_value_site_pv"></span>
+    </span>
+</p>
+
+
+        <p>
+            
+                <span><a href="/atom.xml" target="_blank" class="rss" title="rss"><i class="icon icon-lg icon-rss"></i></a></span>
+            
+            <span>博客内容遵循 <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">知识共享 署名 - 非商业性 - 相同方式共享 4.0 国际协议</a></span>
+        </p>
+    </div>
+    <div class="bottom">
+        <p><span>Fanhr &copy; 2018</span>
+            <span>
+                
+                Power by <a href="http://hexo.io/" target="_blank">Hexo</a> Theme <a href="https://github.com/yscoder/hexo-theme-indigo" target="_blank">indigo</a>
+            </span>
+        </p>
+    </div>
+</footer>
+
+    </main>
+    <div class="mask" id="mask"></div>
+<a href="javascript:;" id="gotop" class="waves-effect waves-circle waves-light"><span class="icon icon-lg icon-chevron-up"></span></a>
+
+
+
+<div class="global-share" id="globalShare">
+    <ul class="reset share-icons">
+      <li>
+        <a class="weibo share-sns" target="_blank" href="http://service.weibo.com/share/share.php?url=https://fanhuiren888.github.io/2018/04/17/Linux-Centos6-新增硬盘分区，格式化-加载/&title=《Linux_Centos6_新增硬盘分区，格式化,加载》 — Fanhr&pic=https://fanhuiren888.github.io/img/工作照.jpg" data-title="微博">
+          <i class="icon icon-weibo"></i>
+        </a>
+      </li>
+      <li>
+        <a class="weixin share-sns wxFab" href="javascript:;" data-title="微信">
+          <i class="icon icon-weixin"></i>
+        </a>
+      </li>
+      <li>
+        <a class="qq share-sns" target="_blank" href="http://connect.qq.com/widget/shareqq/index.html?url=https://fanhuiren888.github.io/2018/04/17/Linux-Centos6-新增硬盘分区，格式化-加载/&title=《Linux_Centos6_新增硬盘分区，格式化,加载》 — Fanhr&source=" data-title=" QQ">
+          <i class="icon icon-qq"></i>
+        </a>
+      </li>
+      <li>
+        <a class="facebook share-sns" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https://fanhuiren888.github.io/2018/04/17/Linux-Centos6-新增硬盘分区，格式化-加载/" data-title=" Facebook">
+          <i class="icon icon-facebook"></i>
+        </a>
+      </li>
+      <li>
+        <a class="twitter share-sns" target="_blank" href="https://twitter.com/intent/tweet?text=《Linux_Centos6_新增硬盘分区，格式化,加载》 — Fanhr&url=https://fanhuiren888.github.io/2018/04/17/Linux-Centos6-新增硬盘分区，格式化-加载/&via=https://fanhuiren888.github.io" data-title=" Twitter">
+          <i class="icon icon-twitter"></i>
+        </a>
+      </li>
+      <li>
+        <a class="google share-sns" target="_blank" href="https://plus.google.com/share?url=https://fanhuiren888.github.io/2018/04/17/Linux-Centos6-新增硬盘分区，格式化-加载/" data-title=" Google+">
+          <i class="icon icon-google-plus"></i>
+        </a>
+      </li>
+    </ul>
+ </div>
+
+
+<div class="page-modal wx-share" id="wxShare">
+    <a class="close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPYAAAD2CAAAAADAeSUUAAADH0lEQVR42u3aQXLjMAwEwPz/095rLlJmCHrLolunlKPYbPiAYKCfn/h6/bp+v3J1z/2d9/df3bn229GFjY2N/RD26/a6ZycfeV+g5M72y7i3YGNjY5/Kvj9u3pDyRrVW7vycf5wNGxsb+4vZ8+aRjDE5GBsbGxt7jd2WJi/cfSGwsbGxsSehUhIJ7Tp6Pti8PUvDxsbG/nh2vhX9/J/fst/GxsbG/mD2q7zypWz++M7e1hgpsLGxsQ9i5w0gj29y0lokNHlsCBsbG/s8dh7frI0uk7+dF/fyfbCxsbGPY+eHzhcJyTiRLJvbVlrsQ7CxsbGPYOf4HDlZEq99Ga0CGxsb+yR2Evq3HzBfA7SFSF7HxsbGPpudDx55k0veJynTaJV7VQhsbGzsg9h520gemmmjn7Z8bfv8oz1jY2NjH8pODtGOHEnQnw9Fux7oxMbGxv4edt7M1h7ombertzQwbGxs7Aeyc3y+Qpg8uDMZhKKFBzY2NvYR7LUoPy9NHlclh26b1uX92NjY2F/A3jVyFF00D4PGAwk2Njb2Sey2nUzi+10R1dpqudhvY2NjYx/BzuP7Xe0q+fS9sRc2Njb2Gez7AChpUfPmlMdYRXO6Pyc2Njb2Qey10WJtSGijq+T1thCjiQobGxv7I9n5myYtJy/K5OgbzomNjY19ELsNhvJWlAw2+aHXijJaTmNjY2M/hL02PKyNE2v4dlUcfS42Njb2Qez2n/420G/XvZPSrDVgbGxs7Kezk2GgbSrzx2vy+an99GIGwsbGxn4IO/9Hv02q2mVte7VdGhsbG/ub2fPFbV7E+uiTxoaNjY19KHv+SE0eD83LPQmqsLGxsc9jz2P9NqjKx5j/tA/BxsbGfiB7LcqZvJ63sbZ8RYGwsbGxD2K3zWCygs0bZLsYSIalxaJgY2NjP4Tdxkl5tNQGTG201DY8bGxs7LPZuxrDZKnw7lAJGxsbG3vXcjcJm5Iiti0WGxsbG3stndp16PwLeMsogo2Njf3x7MlyN39Yp30ccx5dXb4DNjY29kHstYAmD+ujwWC8DMhPhY2NjX0Q+x/D92ejhucBFAAAAABJRU5ErkJggg==" alt="微信分享二维码">
+</div>
+
+
+
+
+    <script src="//cdn.bootcss.com/node-waves/0.7.4/waves.min.js"></script>
+<script>
+var BLOG = { ROOT: '/', SHARE: true, REWARD: false };
+
+
+</script>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/main.min.js"></script>
+
+
+<div class="search-panel" id="search-panel">
+    <ul class="search-result" id="search-result"></ul>
+</div>
+<template id="search-tpl">
+<li class="item">
+    <a href="{path}" class="waves-block waves-effect">
+        <div class="title ellipsis" title="{title}">{title}</div>
+        <div class="flex-row flex-middle">
+            <div class="tags ellipsis">
+                {tags}
+            </div>
+            <time class="flex-col time">{date}</time>
+        </div>
+    </a>
+</li>
+</template>
+
+<script src="//unpkg.com/hexo-theme-material-indigo@latest/js/search.min.js" async></script>
+
+
+
+
+
+
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+<script>
+(function() {
+    var OriginTitile = document.title, titleTime;
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            document.title = '死鬼去哪里了！';
+            clearTimeout(titleTime);
+        } else {
+            document.title = '(つェ⊂)咦!又好了!';
+            titleTime = setTimeout(function() {
+                document.title = OriginTitile;
+            },2000);
+        }
+    });
+})();
+</script>
+
+
+
+</body>
+</html>
